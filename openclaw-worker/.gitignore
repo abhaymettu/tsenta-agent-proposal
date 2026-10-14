@@ -1,0 +1,5 @@
+server/.spend.json
+server/live.json
+__pycache__/
+server/demo.db*
+run/

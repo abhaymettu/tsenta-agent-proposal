@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tsenta · demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stage">
+    <aside class="rail" aria-label="About this demo">
+      <div class="wordmark">Tsenta</div>
+      <h1 class="headline">Your job search,<br>over text.</h1>
+      <p class="lede">A concept for Tsenta's agent. Claude reads what you mean, code decides what happens, and nothing goes out without your yes.</p>
+      <div class="debug-only">
+      <ol class="scenes" id="scenes"></ol>
+      <div class="controls">
+        <button class="btn primary" id="next" type="button">Next <kbd>Space</kbd></button>
+        <button class="btn" id="reset" type="button">Restart <kbd>R</kbd></button>
+        <button class="btn state-toggle" id="r-state" type="button">Agent state</button>
+      </div>
+      <p class="fine">Proposed direction for discussion, not a plan Tsenta has adopted. Built on what Tsenta ships today: applying, tracking, job mail and drafts.</p>
+      <p class="fine" id="mode-line">Mode: scripted (offline)</p>
+      </div>
+    </aside>
+
+    <main class="device">
+      <div class="screen">
+        <div class="statusbar" aria-hidden="true">
+          <span>10:15</span>
+          <svg viewBox="0 0 66 12" width="66" height="12"><g fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><path d="M30 3.2a9.5 9.5 0 0 1 12 0l-1.4 1.5a7.5 7.5 0 0 0-9.2 0zM32.4 5.9a6 6 0 0 1 7.2 0l-1.5 1.5a3.8 3.8 0 0 0-4.2 0zM36 11.5l-2-2a2.8 2.8 0 0 1 4 0z"/><rect x="47" y="1" width="16" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/><rect x="48.5" y="2.5" width="12" height="7" rx="1.6"/><rect x="64" y="4" width="1.5" height="4" rx="0.7" opacity="0.4"/></g></svg>
+        </div>
+        <div class="mobile-bar" aria-label="Demo controls">
+          <span class="sim-badge">Simulation</span>
+          <span class="mobile-scene" id="mobile-scene"></span>
+          <button class="icon-btn" id="m-state" type="button" aria-label="Show agent state">State</button>
+          <button class="icon-btn" id="m-reset" type="button" aria-label="Restart">↺</button>
+        </div>
+        <header class="nav">
+          <svg class="nav-back" viewBox="0 0 12 20" width="12" height="20" aria-hidden="true"><path d="M10 2 2 10l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="nav-contact">
+            <div class="avatar" aria-hidden="true">T</div>
+            <div class="nav-name">Tsenta <span aria-hidden="true">›</span></div>
+          </div>
+        </header>
+        <div class="thread" id="thread" aria-live="polite"></div>
+        <footer class="composer">
+          <span class="plus" aria-hidden="true">+</span>
+          <div class="field">
+            <input id="input" type="text" placeholder="Message" aria-label="Message">
+            <button class="send" id="send" type="button" aria-label="Send">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <aside class="state" id="state-panel" aria-label="Agent state">
+      <div class="state-head">
+        <div>
+          <div class="state-title">What code owns</div>
+          <div class="state-sub">Deterministic state. The model only proposes.</div>
+        </div>
+        <button class="icon-btn state-close" id="state-close" type="button" aria-label="Close state">Done</button>
+      </div>
+      <div id="state"></div>
+    </aside>
+  </div>
+  <script src="core.js"></script>
+  <script src="scenes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+// OpenClaw worker config for the Tsenta synthetic-data demo (551 contract s4, pin openclaw@2026.10.3 / 59cb447).
+// Loaded from OPENCLAW_CONFIG_PATH inside the oc551-worker container. DOCUMENTED is not PROVEN: each key counts only
+// after its runtime gate (9.5 proxy test, B3 canary, G-h effective permissions). No secret literal appears here.
+{
+  // 551 v48: utilityModel "" disables the Gateway's background Activity recaps (model-selection-shared:148-151); unset
+  // means auto, which used the Anthropic default utility model and sent a model request outside any turn (ping 21:31).
+  // heartbeat.every "0m": no recurring heartbeat turn. Unset, the Gateway ran one every 30m (heartbeat.md :37, :96) as
+  // agent:main:main; run 2d01e83a at 22:31 CDT made 3 unapproved model calls and 2 tool forwards (551 v65, operator 22:37).
+  agents: { defaults: { model: { primary: "anthropic/claude-haiku-5-5" }, utilityModel: "", heartbeat: { every: "0m" } } },
+
+  // The only tools: the core's fixture MCP server, reached through the edge's tool forward (edge adds the bearer).
+  // OpenClaw names them `${safeServerName}__${tool}` (checked in dist/agent-bundle-mcp-materialize), so tsenta__*.
+  mcp: {
+    servers: {
+      tsenta: { url: "http://oc551-edge:8560/mcp", transport: "streamable-http", requestTimeoutMs: 20000, connectionTimeoutMs: 5000 },
+    },
+  },
+  tools: {
+    profile: "minimal",
+    alsoAllow: ["tsenta__*"],
+    deny: ["group:automation", "gateway", "group:runtime", "group:fs", "group:web", "group:ui", "group:sessions",
+           "group:memory", "sessions_spawn", "sessions_send", "cron"],
+    exec: { mode: "deny" },
+    swarm: false,
+    codeMode: { enabled: false },
+    // 551 v48: unset means structured Tool Search for embedded runs, which cataloged the 14 MCP tools behind a search
+    // surface so the explicit allowlist matched nothing ("No callable tools remain", ping 21:31). false = direct schemas.
+    toolSearch: false,
+  },
+  plugins: {
+    // allow is exclusive. "bundle-mcp" is not a plugin at the pin: it is the tool-policy owner key stamped on MCP tools at
+    // materialize, and cfg.mcp.servers is gated by server.enabled and session overrides, never by plugins.allow (551 v15).
+    // Listing it here was a no-op ("plugin not found: bundle-mcp"), so it is gone. Never deny group:plugins.
+    allow: ["anthropic"],
+    deny: ["alibaba", "azure-speech", "browser", "canvas", "clawrouter", "copilot-proxy", "cua-computer", "deepgram",
+           "device-pair", "document-extract", "elevenlabs", "fal", "file-transfer", "geolocation", "github-copilot",
+           "github", "google", "huggingface", "kie", "linux-node", "litellm", "lmstudio", "microsoft-foundry", "microsoft",
+           "minimax", "nvidia", "ollama", "openai", "opencode-go", "openrouter", "runway", "senseaudio", "sglang",
+           "talk-voice", "together", "tts-local-cli", "vllm", "web-readability", "xai"],  // codex is not shipped at the pin
+    slots: { memory: "none" },
+    entries: { "memory-core": { config: { dreaming: { enabled: false } } } },
+  },
+  security: { installPolicy: { enabled: true } },
+  update: { checkOnStart: false, auto: { enabled: false } },
+  // 551 v14 F-b: no remote model catalog refresh (catalog.openclaw.ai at start and every 6 h; gateway/config-runtime.md).
+  // 551 v18 F-d: mode "replace" stops live model discovery at start (GET api.anthropic.com/v1/models with the key;
+  // register.runtime), so the one provider and model are declared here. Block verbatim from openclaw-models-replace-v18.json.
+  models: {"mode": "replace", "catalogRefresh": {"enabled": false}, "providers": {"anthropic": {"baseUrl": "https://api.anthropic.com", "api": "anthropic-messages", "models": [{"id": "claude-haiku-5-5", "name": "Claude Haiku 5.5", "reasoning": true, "input": ["text", "image"], "contextWindow": 1000000, "maxTokens": 128000, "cost": {"input": 0.1, "output": 0.5, "cacheRead": 0.01, "cacheWrite": 0.125, "tieredPricing": [{"range": [0, 100001], "input": 0.1, "output": 0.5, "cacheRead": 0.01, "cacheWrite": 0.125}, {"range": [100001], "input": 0.5, "output": 2.5, "cacheRead": 0.05, "cacheWrite": 0.625}]}}]}}},
+  telemetry: { enabled: false },
+  gateway: {
+    // Required at the pin: without it, start is blocked ("Gateway start blocked: existing config is missing gateway.mode";
+    // canary 20261013T195916). "local" runs the agent runtime in this container; "remote" would need gateway.remote.url.
+    mode: "local",
+    bind: "loopback",
+    auth: { mode: "token", token: "${OPENCLAW_GATEWAY_TOKEN}" },
+    cliAgents: { enabled: false },
+  },
+  proxy: { proxyUrl: "http://oc551-edge:3128" },
+  logging: { level: "info", file: "/demo/state/logs/openclaw.log" },
+}

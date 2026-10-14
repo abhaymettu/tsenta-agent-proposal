@@ -1,0 +1,9 @@
+__pycache__/
+node_modules/
+.DS_Store
+run/
+server/demo.db*
+server/live.json
+server/.spend.json
+pitch/outputs/*.pptx
+pitch/outputs/*.pdf
