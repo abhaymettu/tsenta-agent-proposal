@@ -85,4 +85,4 @@ The deck proposes the same shape for Tsenta: Tsenta's core above, swappable agen
 
 ## License
 
-No license has been chosen yet; see `LICENSE`. Third-party notices are in `THIRD_PARTY_NOTICES.md`.
+MIT licensed; see `LICENSE`. Third-party material keeps its own terms; see `THIRD_PARTY_NOTICES.md`.
